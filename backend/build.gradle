@@ -1,0 +1,40 @@
+// If you would like more information on the gradle-appengine-plugin please refer to the github page
+// https://github.com/GoogleCloudPlatform/gradle-appengine-plugin
+
+buildscript {
+    repositories {
+        jcenter()
+    }
+    dependencies {
+        classpath 'com.google.appengine:gradle-appengine-plugin:1.9.28'
+    }
+}
+
+repositories {
+    jcenter();
+}
+
+apply plugin: 'java'
+apply plugin: 'war'
+apply plugin: 'appengine'
+
+sourceCompatibility = JavaVersion.VERSION_1_7
+targetCompatibility = JavaVersion.VERSION_1_7
+
+dependencies {
+    appengineSdk 'com.google.appengine:appengine-java-sdk:1.9.28'
+    compile 'javax.servlet:servlet-api:2.5'
+    compile files('restfb-1.31.0-javadoc.jar')
+    compile files('src/main/webapp/WEB-INF/lib/jstl-1.2.jar')
+    compile files('src/main/webapp/WEB-INF/lib/log4j-1.2.16.jar')
+    compile files('src/main/webapp/WEB-INF/lib/restfb-1.6.14.jar')
+    compile files('src/main/webapp/WEB-INF/lib/servlet.jar')
+    compile 'com.google.code.gson:gson:2.2.4'
+}
+
+appengine {
+  downloadSdk = true
+  appcfg {
+    oauth2 = true
+  }
+}

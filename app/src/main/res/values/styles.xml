@@ -1,0 +1,25 @@
+<resources>
+
+    <!-- Base application theme. -->
+    <style name="AppTheme" parent="Theme.AppCompat.NoActionBar">
+        <!-- Customize your theme here. -->
+        <item name="colorPrimary">@color/com_facebook_button_send_background_color</item>
+        <item name="colorPrimaryDark">@color/com_facebook_blue</item>
+        <item name="colorAccent">@color/com_facebook_button_send_background_color</item>
+        <item name="android:colorBackground">@color/cardview_light_background</item>
+        <item name="android:textColorPrimaryInverse">#000000</item>
+    </style>
+
+    <style name="AppTheme.NoActionBar">
+        <item name="windowActionBar">false</item>
+        <item name="windowNoTitle">true</item>
+    </style>
+
+    <style name="AppTheme.AppBarOverlay" parent="Base.ThemeOverlay.AppCompat.Dark" />
+
+    <style name="AppTheme.PopupOverlay" parent="Base.ThemeOverlay.AppCompat.Dark" />
+
+
+
+
+</resources>

@@ -1,0 +1,13 @@
+<resources>
+    <string name="app_name">LikeMeister</string>
+    <string name="facebook_app_id">1689947361333180</string>
+
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
+
+    <string name="action_settings">Log Out</string>
+    <string name="title_activity_main2">Main2Activity</string>
+    <string name="tag"><font size="10">Enter Number of Tags</font></string>
+    <string name="statt"><font size="10">Enter Status</font></string>
+
+</resources>
