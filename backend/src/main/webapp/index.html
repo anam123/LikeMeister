@@ -30,9 +30,9 @@
 
                 <form action="/Predictor" method="POST">
                     <div class="input-group">
-                        <input type="text" class="form-control input-lg" placeholder="Name" name="name" />
+                        <input type="text" class="form-control input-lg"  placeholder="Name"  name="name" />
                           <span class="input-group-btn">
-                             <button class="btn btn-default btn-primary btn-group btn-lg" type="submit" id="helloButton">Say "Hello";</button>
+                             <button class="btn btn-default btn-primary btn-group btn-lg"  name="myButton" onclick="this.value='Submitting ..';this.disabled='disabled'; this.form.submit();" type="submit"  id="helloButton">Say "Hello";</button>
                           </span>
                     </div>
                 </form>
@@ -45,4 +45,7 @@
 </div>
 
 </body>
+
+
+
 </html>

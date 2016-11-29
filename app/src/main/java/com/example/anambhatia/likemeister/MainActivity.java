@@ -120,7 +120,7 @@ public class MainActivity extends Activity {
 
         @Override
         protected void onPostExecute(String result) {
-            String[] output= result.split("_");
+            String[] output= result.split("___anambhatia___");
             for(int i=0;i<output.length;i++)
             {
                 System.out.println(output.length);

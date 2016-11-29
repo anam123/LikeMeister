@@ -26,18 +26,6 @@
             android:text="ATTACHMENTS"
             android:textSize="30sp" />
 
-        <Button
-            android:text="PREDICT"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentBottom="true"
-            android:layout_centerHorizontal="true"
-            android:layout_marginBottom="76dp"
-            android:id="@+id/button2"
-            android:elevation="6dp"
-            style="@style/com_facebook_button_share"
-            />
-
         <android.support.design.widget.TextInputLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -142,6 +130,18 @@
                     android:textSize="20sp" />
 
             </RadioGroup>
+
+            <Button
+                android:text="PREDICT"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/button2"
+                android:elevation="6dp"
+                style="@style/com_facebook_button_share"
+                android:layout_centerVertical="true"
+                android:layout_centerHorizontal="true" />
+
+
 
         </RelativeLayout>
 

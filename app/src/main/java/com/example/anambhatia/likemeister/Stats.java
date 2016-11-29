@@ -4,6 +4,8 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Color;
+import android.graphics.Typeface;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -12,15 +14,19 @@ import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.ListFragment;
 import android.support.v4.widget.DrawerLayout;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.widget.Toolbar;
 import android.util.Pair;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.LinearLayout;
 import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.ProgressBar;
@@ -45,6 +51,9 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Timer;
+import java.util.TimerTask;
+import java.util.concurrent.TimeUnit;
 
 import javax.net.ssl.HttpsURLConnection;
 
@@ -53,21 +62,44 @@ public class Stats extends ListFragment {
 
     TextView likes;
     TextView posts;
-    TextView a,b,c;
+    TextView a,b,c,y,z,x,w;
     ProgressBar d;
     String access;
+    MenuItem nav_item2;
+    MenuItem nav_item1;
+    MenuItem nav_item3;
+
+    //the location of the server/database
     public static final String URL = ("http://likemeister-145918.appspot.com/Predictor");
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        a=(TextView)view.findViewById(R.id.textView6);
-        b=(TextView)view.findViewById(R.id.textView9);
+        a=(TextView)view.findViewById(R.id.textView9);
+        b=(TextView)view.findViewById(R.id.textView11);
+        c=(TextView)view.findViewById(R.id.textView30);
         //  view.findViewById(R.id.textView11).setVisibility(View.VISIBLE);
-        c=(TextView)view.findViewById(R.id.textView13);
         d=(ProgressBar)view.findViewById(R.id.loadingPanel);
-         posts = (TextView) view.findViewById(R.id.textView8);
-        likes = (TextView) view.findViewById(R.id.textView11);
+         posts = (TextView) view.findViewById(R.id.textView22);
+        likes = (TextView) view.findViewById(R.id.textView13);
+        y = (TextView) view.findViewById(R.id.textView24);
+        z = (TextView) view.findViewById(R.id.textView25);
+        x = (TextView) view.findViewById(R.id.textView26);
+        w = (TextView) view.findViewById(R.id.textView29);
+        //change font
+        final Typeface typeFace1=Typeface.createFromAsset(getActivity().getAssets(),"YanoneKaffeesatz-Regular.otf");
+        a.setTypeface(typeFace1);
+        b.setTypeface(typeFace1);
+        c.setTypeface(typeFace1);
+        x.setTypeface(typeFace1);
+        y.setTypeface(typeFace1);
+        z.setTypeface(typeFace1);
+        w.setTypeface(typeFace1);
+        posts.setTypeface(typeFace1);
+        likes.setTypeface(typeFace1);
+
+
         System.out.println("a:"+access);
+        //use the access token and pass it as an input to the async task.
         new Stats.ServletPostAsyncTask().execute(new Pair<Context, String>(getContext(), access));
 
 
@@ -77,11 +109,33 @@ public class Stats extends ListFragment {
         private Context context;
 
         @Override
+        protected void onPreExecute() {
+
+            //disable all the menu bar items while data being loaded.
+            NavigationView navigationView= (NavigationView) getActivity().findViewById(R.id.nav_view);
+            Menu menuNav=navigationView.getMenu();
+            nav_item2 = menuNav.findItem(R.id.menuItem2);
+            nav_item2.setEnabled(false);
+            nav_item3 = menuNav.findItem(R.id.menuItem3);
+            nav_item3.setEnabled(false);
+            nav_item1 = menuNav.findItem(R.id.menuItem1);
+            nav_item1.setEnabled(false);
+
+        }
+
+        @Override
         protected String doInBackground(Pair<Context, String>... params) {
             context = params[0].first;
             String name = params[0].second;
 
             try {
+
+
+
+               // drawer.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED);
+
+                //getActivity().getActionBar().hide();
+
                 // Set up the request
                 java.net.URL url = new URL("http://likemeister-145918.appspot.com/Predictor");
                 HttpURLConnection connection = (HttpURLConnection) url.openConnection();
@@ -122,6 +176,7 @@ public class Stats extends ListFragment {
             }
         }
 
+
         private String buildPostDataString(Map<String, String> params) throws UnsupportedEncodingException {
             StringBuilder result = new StringBuilder();
             boolean first = true;
@@ -142,7 +197,8 @@ public class Stats extends ListFragment {
 
         @Override
         protected void onPostExecute(String result) {
-            String[] output= result.split("___");
+            String[] output= result.split("___anambhatia___");
+            //Extract data from the server. Convert the json format into suitable format.
             for(int i=0;i<output.length;i++)
             {
                 System.out.println(output.length);
@@ -167,6 +223,7 @@ public class Stats extends ListFragment {
                 List<String> list2 = new ArrayList<String>();
 
                 for (int j = 0; j < jsonArray2.length(); j++) {
+
                     list2.add(jsonArray2.getString(j));
                 }
 
@@ -177,29 +234,58 @@ public class Stats extends ListFragment {
                     list3.add(jsonArray3.getInt(j));
                 }
 
+                //Display retreived data in textviews/listviews etc.
+
                 likes.setText(output[4].toString());
                 posts.setText(output[6].toString());
+                x.setText(output[7].toString());
+                w.setText(output[5].toString());
                 ListView lv = getListView();
                 //ListAdapter adapter = new SimpleAdapter(Stats.this, list2, R.layout.listing, new String[]{"name", "rating", "review"}, new int[]{R.id.likes, R.id.comments, R.id.status});
-                ArrayAdapter<String> adapter = new ArrayAdapter<String>(
+
+                //using a custom list for a better ui.
+                CustomListAdapter adapter = new CustomListAdapter(
+
                         getContext(),
-                        android.R.layout.simple_list_item_1,
+                        R.layout.custom_list,
                         list2 );
                 lv.setAdapter(adapter);
                 a.setVisibility(View.VISIBLE);
                 b.setVisibility(View.VISIBLE);
                 //  view.findViewById(R.id.textView11).setVisibility(View.VISIBLE);
                 c.setVisibility(View.VISIBLE);
+                x.setVisibility(View.VISIBLE);
+                y.setVisibility(View.VISIBLE); z.setVisibility(View.VISIBLE);
+                w.setVisibility(View.VISIBLE);
+
+                //enabling menu bar items after background tasks completed.
+                nav_item2.setEnabled(true);
+                nav_item1.setEnabled(true);
+                nav_item3.setEnabled(true);
                 d.setVisibility(View.GONE);
 
+               //Setting an onclicklistener on our list
                 lv.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                     @Override
                     public void onItemClick(AdapterView<?> parent, View view,
                                             int position, long id) {
 //
 
-                        Snackbar.make(view, "Likes On Post: "+ list3.get(position).toString(), Snackbar.LENGTH_LONG)
-                                .setAction("Action", null).show();
+                        LinearLayout ll = (LinearLayout) view; // get the parent layout view
+                       final TextView tv = (TextView) ll.findViewById(R.id.textView);
+                       final String  original= tv.getText().toString();
+                        tv.setBackgroundColor(Color.DKGRAY);
+                        //change text on the list item for 2000 milliseconds
+                        tv.setText("Likes On Post: "+ list3.get(position).toString());
+                        tv.postDelayed(new Runnable() {
+                            public void run() {
+                                tv.setText(original);
+                                tv.setBackgroundColor(Color.parseColor("#0084ff"));
+
+                            }
+                        }, 2000);
+                        //Snackbar.make(view, "Likes On Post: "+ list3.get(position).toString(), Snackbar.LENGTH_LONG)
+                               // .setAction("Action", null).show();
                     }
             });
 
@@ -212,6 +298,7 @@ public class Stats extends ListFragment {
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+
 
 
         access = getArguments().getString("token");

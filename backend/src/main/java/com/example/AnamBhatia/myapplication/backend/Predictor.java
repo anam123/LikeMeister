@@ -177,12 +177,12 @@ public class Predictor extends HttpServlet {
 
 				if(post.getMessage()!=null) {
 					System.out.println(post.getMessage()+" "+post.getType());
-					posts.add(post.getMessage()+":"+post.getType());
+					posts.add(post.getMessage().substring(0, 1).toUpperCase()+ post.getMessage().substring(1)+ " : "+post.getType().toUpperCase());
 				}
 				else{
 
 					System.out.println(post.getType());
-					posts.add(post.getType());
+					posts.add(post.getType().toUpperCase());
 				}
 
 			if(post!=null)
@@ -516,23 +516,23 @@ public class Predictor extends HttpServlet {
 
 		response.setContentType("application/json;charset=UTF-8");
 		response.getWriter().write(json);
-		response.getWriter().write("___");
+		response.getWriter().write("___anambhatia___");
 		response.getWriter().write(j1);
-		response.getWriter().write("___");
+		response.getWriter().write("___anambhatia___");
 		response.getWriter().write(post);
-		response.getWriter().write("___");
+		response.getWriter().write("___anambhatia___");
 		response.getWriter().write(postdate);
-		response.getWriter().write("___");
+		response.getWriter().write("___anambhatia___");
 		response.getWriter().write(nl);
-		response.getWriter().write("___");
+		response.getWriter().write("___anambhatia___");
 		response.getWriter().write(nl1);
-		response.getWriter().write("___");
+		response.getWriter().write("___anambhatia___");
 		response.getWriter().write(nl2);
-		response.getWriter().write("___");
+		response.getWriter().write("___anambhatia___");
 		response.getWriter().write(nl3);
-		response.getWriter().write("___");
+		response.getWriter().write("___anambhatia___");
 		response.getWriter().write(name);
-		response.getWriter().write("___");
+		response.getWriter().write("___anambhatia___");
 		response.getWriter().write(tags);
 
 

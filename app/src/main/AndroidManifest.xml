@@ -12,6 +12,12 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme.NoActionBar"
         >
+
+        <provider
+            android:authorities="com.facebook.app.FacebookContentProvider1689947361333180"
+            android:name="com.facebook.FacebookContentProvider"
+            android:exported="true" />
+
         <activity android:name=".Main2Activity" android:configChanges="orientation"
             android:screenOrientation="portrait"></activity>
         <activity android:name=".LoginActivity" android:configChanges="orientation"

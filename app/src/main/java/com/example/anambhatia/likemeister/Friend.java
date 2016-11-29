@@ -10,11 +10,14 @@ import android.support.design.widget.NavigationView;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.ListFragment;
+import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.widget.Toolbar;
 import android.util.Pair;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
@@ -52,11 +55,17 @@ public class Friend extends ListFragment {
     public static final String URL = ("http://likemeister-145918.appspot.com/Predictor");
     String access;
     ProgressBar d;
+    MenuItem nav_item2;
+    MenuItem nav_item1;
+    MenuItem nav_item3;
 
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         d=(ProgressBar)view.findViewById(R.id.loadingPanel1);
+
+
+        //use the access token and pass it as an input to the async task.
         new Friend.ServletPostAsyncTask().execute(new Pair<Context, String>(getContext(), access));
 
     }
@@ -65,9 +74,24 @@ public class Friend extends ListFragment {
         private Context context;
 
         @Override
+        protected void onPreExecute() {
+            //disable all menu bar items when background tasks happen
+            NavigationView navigationView= (NavigationView) getActivity().findViewById(R.id.nav_view);
+            Menu menuNav=navigationView.getMenu();
+            nav_item2 = menuNav.findItem(R.id.menuItem3);
+            nav_item2.setEnabled(false);
+            nav_item3 = menuNav.findItem(R.id.menuItem2);
+            nav_item3.setEnabled(false);
+            nav_item1 = menuNav.findItem(R.id.menuItem1);
+            nav_item1.setEnabled(false);
+
+        }
+
+        @Override
         protected String doInBackground(Pair<Context, String>... params) {
             context = params[0].first;
             String name = params[0].second;
+
 
             try {
                 // Set up the request
@@ -130,7 +154,8 @@ public class Friend extends ListFragment {
 
         @Override
         protected void onPostExecute(String result) {
-            String[] output= result.split("___");
+            //extract data and convert json into suitable format.
+            String[] output= result.split("___anambhatia___");
             for(int i=0;i<output.length;i++)
             {
                 System.out.println(output.length);
@@ -167,11 +192,15 @@ public class Friend extends ListFragment {
 
                 ListView lv = getListView();
                 //ListAdapter adapter = new SimpleAdapter(Stats.this, list2, R.layout.listing, new String[]{"name", "rating", "review"}, new int[]{R.id.likes, R.id.comments, R.id.status});
-                ArrayAdapter<String> adapter = new ArrayAdapter<String>(
+              //using a custom list for a better ui.
+                CustomListAdapter adapter = new CustomListAdapter(
                         getContext(),
-                        android.R.layout.simple_list_item_1,
+                        R.layout.custom_list,
                         list2 );
                 lv.setAdapter(adapter);
+                nav_item2.setEnabled(true);
+                nav_item1.setEnabled(true);
+                nav_item3.setEnabled(true);
                 d.setVisibility(View.GONE);
 
 
@@ -184,9 +213,13 @@ public class Friend extends ListFragment {
         }
     }
 
+
+
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+
+        //extract access token from bundle
         access = getArguments().getString("token");
         View v = inflater.inflate(R.layout.friend, container, false);
         return v;
