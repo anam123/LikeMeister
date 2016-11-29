@@ -3,6 +3,8 @@ package com.example.anambhatia.likemeister;
 import android.app.Activity;
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -14,6 +16,7 @@ import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.util.Pair;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -25,6 +28,7 @@ import android.widget.Button;
 import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -70,6 +74,42 @@ public class Friend extends ListFragment {
 
     }
 
+    public static class CheckNetwork {
+
+
+        private static final String TAG = Stats.CheckNetwork.class.getSimpleName();
+
+
+
+        public static boolean isInternetAvailable(Context context)
+        {
+            NetworkInfo info = (NetworkInfo) ((ConnectivityManager)
+                    context.getSystemService(Context.CONNECTIVITY_SERVICE)).getActiveNetworkInfo();
+
+            if (info == null)
+            {
+                Log.d(TAG,"no internet connection");
+                return false;
+            }
+            else
+            {
+                if(info.isConnected())
+                {
+                    Log.d(TAG," internet connection available...");
+                    return true;
+                }
+                else
+                {
+                    Log.d(TAG," internet connection");
+                    return true;
+                }
+
+            }
+        }
+    }
+
+
+
     private class ServletPostAsyncTask extends AsyncTask<Pair<Context, String>, Void, String> {
         private Context context;
 
@@ -93,44 +133,53 @@ public class Friend extends ListFragment {
             String name = params[0].second;
 
 
-            try {
-                // Set up the request
-                java.net.URL url = new URL("http://likemeister-145918.appspot.com/Predictor");
-                HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-                connection.setRequestMethod("POST");
-                connection.setDoInput(true);
-                connection.setDoOutput(true);
+            if(Stats.CheckNetwork.isInternetAvailable(getActivity())) //returns true if internet available
+            {
 
-                // Build name data request params
-                Map<String, String> nameValuePairs = new HashMap<>();
-                nameValuePairs.put("name", name);
-                String postParams = buildPostDataString(nameValuePairs);
 
-                // Execute HTTP Post
-                OutputStream outputStream = connection.getOutputStream();
-                BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(outputStream, "UTF-8"));
-                writer.write(postParams);
-                writer.flush();
-                writer.close();
-                outputStream.close();
-                connection.connect();
+                try {
+                    // Set up the request
+                    java.net.URL url = new URL("http://likemeister-145918.appspot.com/Predictor");
+                    HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+                    connection.setRequestMethod("POST");
+                    connection.setDoInput(true);
+                    connection.setDoOutput(true);
 
-                // Read response
-                int responseCode = connection.getResponseCode();
-                StringBuilder response = new StringBuilder();
-                BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
-                String line;
-                while ((line = reader.readLine()) != null) {
-                    response.append(line);
+                    // Build name data request params
+                    Map<String, String> nameValuePairs = new HashMap<>();
+                    nameValuePairs.put("name", name);
+                    String postParams = buildPostDataString(nameValuePairs);
+
+                    // Execute HTTP Post
+                    OutputStream outputStream = connection.getOutputStream();
+                    BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(outputStream, "UTF-8"));
+                    writer.write(postParams);
+                    writer.flush();
+                    writer.close();
+                    outputStream.close();
+                    connection.connect();
+
+                    // Read response
+                    int responseCode = connection.getResponseCode();
+                    StringBuilder response = new StringBuilder();
+                    BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
+                    String line;
+                    while ((line = reader.readLine()) != null) {
+                        response.append(line);
+                    }
+                    reader.close();
+
+                    if (responseCode == HttpsURLConnection.HTTP_OK) {
+                        return response.toString();
+                    }
+                    return "Error: " + responseCode + " " + connection.getResponseMessage();
+                } catch (IOException e) {
+                    return e.getMessage();
                 }
-                reader.close();
-
-                if (responseCode == HttpsURLConnection.HTTP_OK) {
-                    return response.toString();
-                }
-                return "Error: " + responseCode + " " + connection.getResponseMessage();
-            } catch (IOException e) {
-                return e.getMessage();
+            }
+            else
+            {
+                return "A";
             }
         }
 
@@ -155,31 +204,40 @@ public class Friend extends ListFragment {
         @Override
         protected void onPostExecute(String result) {
             //extract data and convert json into suitable format.
-            String[] output= result.split("___anambhatia___");
-            for(int i=0;i<output.length;i++)
-            {
-                System.out.println(output.length);
-                System.out.println(output[i]);
+            if (result.equals("A")) {
+
+                Toast.makeText(getContext(), "ERROR", Toast.LENGTH_SHORT).show();
+                d.setVisibility(View.GONE);
+                nav_item2.setEnabled(true);
+                nav_item1.setEnabled(true);
+                nav_item3.setEnabled(true);
+
             }
-            try {
-                JSONArray jsonArray = new JSONArray(output[0]);
-                List<String> list = new ArrayList<String>();
-
-                for (int j = 0; j < jsonArray.length(); j++) {
-                    list.add(jsonArray.getString(j));
+            else {
+                String[] output = result.split("___anambhatia___");
+                for (int i = 0; i < output.length; i++) {
+                    System.out.println(output.length);
+                    System.out.println(output[i]);
                 }
+                try {
+                    JSONArray jsonArray = new JSONArray(output[0]);
+                    List<String> list = new ArrayList<String>();
+
+                    for (int j = 0; j < jsonArray.length(); j++) {
+                        list.add(jsonArray.getString(j));
+                    }
 //
-                JSONArray jsonArray1 = new JSONArray(output[1]);
-                List<Integer> list1 = new ArrayList<Integer>();
+                    JSONArray jsonArray1 = new JSONArray(output[1]);
+                    List<Integer> list1 = new ArrayList<Integer>();
 
-                for (int j = 0; j < jsonArray1.length(); j++) {
-                    list1.add(jsonArray1.getInt(j));
-                }
+                    for (int j = 0; j < jsonArray1.length(); j++) {
+                        list1.add(jsonArray1.getInt(j));
+                    }
 
-                List<String> list2 = new ArrayList<String>();
-                for (int j = 0; j < list.size(); j++) {
-                    list2.add(list.get(j)+" : " + list1.get(j).toString()+" likes");
-                }
+                    List<String> list2 = new ArrayList<String>();
+                    for (int j = 0; j < list.size(); j++) {
+                        list2.add(list.get(j) + " : " + list1.get(j).toString() + " likes");
+                    }
 
 //
 //                JSONArray jsonArray2 = new JSONArray(output[2]);
@@ -190,26 +248,30 @@ public class Friend extends ListFragment {
 //                }
 
 
-                ListView lv = getListView();
-                //ListAdapter adapter = new SimpleAdapter(Stats.this, list2, R.layout.listing, new String[]{"name", "rating", "review"}, new int[]{R.id.likes, R.id.comments, R.id.status});
-              //using a custom list for a better ui.
-                CustomListAdapter adapter = new CustomListAdapter(
-                        getContext(),
-                        R.layout.custom_list,
-                        list2 );
-                lv.setAdapter(adapter);
-                nav_item2.setEnabled(true);
-                nav_item1.setEnabled(true);
-                nav_item3.setEnabled(true);
-                d.setVisibility(View.GONE);
+                    ListView lv = getListView();
+                    //ListAdapter adapter = new SimpleAdapter(Stats.this, list2, R.layout.listing, new String[]{"name", "rating", "review"}, new int[]{R.id.likes, R.id.comments, R.id.status});
+                    //using a custom list for a better ui.
+                    CustomListAdapter adapter = new CustomListAdapter(
+                            getContext(),
+                            R.layout.custom_list,
+                            list2);
+                    lv.setAdapter(adapter);
+                    nav_item2.setEnabled(true);
+                    nav_item1.setEnabled(true);
+                    nav_item3.setEnabled(true);
+                    d.setVisibility(View.GONE);
 
 
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                    Toast.makeText(getContext(), "ERROR", Toast.LENGTH_SHORT).show();
+                    d.setVisibility(View.GONE);
+                    nav_item2.setEnabled(true);
+                    nav_item1.setEnabled(true);
+                    nav_item3.setEnabled(true);
+                }
 
-            } catch (JSONException e) {
-                e.printStackTrace();
             }
-
-
         }
     }
 
